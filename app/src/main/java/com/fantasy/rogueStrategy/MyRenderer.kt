@@ -44,6 +44,8 @@ class MyRenderer : GLSurfaceView.Renderer {
     /** Выделяем массив для хранения объединеной матрицы. Она будет передана в программу шейдера.  */
     private val mMVPMatrix = FloatArray(16)
 
+    private val mProjectionMatrix = FloatArray(16)
+
     private val mBytesPerFloat = 4 //Количество байт занимаемых одним числом.
     private val mStrideBytes = 7 * mBytesPerFloat //Количество элементов в вершине.
     private val mPositionOffset = 0 //Смещение в массиве данных.
@@ -51,8 +53,6 @@ class MyRenderer : GLSurfaceView.Renderer {
     private val mColorOffset = 3 //Смещение для данных цвета.
     private val mColorDataSize = 4 //Размер данных цвета в элементах.
 
-
-    private val mProjectionMatrix = FloatArray(16)
 
     /** Будем хранить наши данные в числовом буфере.  */
     private var mTriangleVertices: MutableList<FloatBuffer> = ArrayList()
@@ -173,31 +173,7 @@ class MyRenderer : GLSurfaceView.Renderer {
      * @param aTriangleBuffer Буфер содержащий данные о вершинах.
      */
     private fun drawTriangle(aTriangleBuffer: FloatBuffer) {
-        // Передаем значения о расположении.
-        aTriangleBuffer.position(mPositionOffset)
-        GLES20.glVertexAttribPointer(
-            mPositionHandle, mPositionDataSize, GLES20.GL_FLOAT, false,
-            mStrideBytes, aTriangleBuffer
-        )
-        GLES20.glEnableVertexAttribArray(mPositionHandle)
 
-        // Передаем значения о цвете.
-        aTriangleBuffer.position(mColorOffset)
-        GLES20.glVertexAttribPointer(
-            mColorHandle, mColorDataSize, GLES20.GL_FLOAT, false,
-            mStrideBytes, aTriangleBuffer
-        )
-        GLES20.glEnableVertexAttribArray(mColorHandle)
-
-        // Перемножаем матрицу ВИДА на матрицу МОДЕЛИ, и сохраняем результат в матрицу MVP
-        // (которая теперь содержит модель*вид).
-        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mModelMatrix, 0)
-
-        // Перемножаем матрицу модели*вида на матрицу проекции, сохраняем в MVP матрицу.
-        // (которая теперь содержит модель*вид*проекцию).
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0)
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3)
     }
 
     override fun onSurfaceCreated(glUnused: GL10?, config: EGLConfig?) {
