@@ -8,6 +8,7 @@ import java.nio.FloatBuffer
 
 object GLESService {
 
+    var fps: Long = 3
     var nextObjPosition = 0
     var vertexData: FloatBuffer? = null
 

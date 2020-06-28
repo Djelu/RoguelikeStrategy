@@ -2,7 +2,6 @@ package com.fantasy.rogueStrategy
 
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import android.opengl.Matrix
 import android.os.SystemClock
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -17,11 +16,24 @@ class MyRenderer : GLSurfaceView.Renderer {
         GLES20.glClearColor(0.5f, 0.5f, 0.5f, 0.5f)
 
         Game.world = mutableMapOf(
-            "tri" to ObjectsService.createTriangle(
-                Dot(-0.5f, -0.25f, 0.0f),
-                Dot(0.5f, -0.25f, 0.0f),
-                Dot(0.0f, 0.559f, 0.0f), RGBA(255, 0, 0)
-            )
+            "tri" to PaintObj(objList = mutableListOf(
+//                ObjectsService.createTriangle(Dot(0f, -0.5f, 0.0f, RGBA(255, 0, 0)), 0.25f),
+//                ObjectsService.createTriangle(Dot(0f, 0f, 0.0f, RGBA(0, 255, 0)), 0.25f),
+//                ObjectsService.createTriangle(Dot(0f, 0.5f, 0.0f, RGBA(0, 0, 255)), 0.25f)
+                ObjectsService.createTriangle(
+                    pars = mapOf("name" to "t1")
+                ),
+
+                ObjectsService.createTriangle(
+                    Dot(0f,-1f,0f),
+                    pars = mapOf("name" to "t2")
+                ).rotate(90f, Dot(1f,0f,0f)),
+
+                ObjectsService.createTriangle(
+                    Dot(1f,0f,0f),
+                    pars = mapOf("name" to "t3")
+                ).rotate(90f, Dot(0f,1f,0f))
+            ))
         )
 
         GLESService.prepareAllData()
@@ -54,9 +66,24 @@ class MyRenderer : GLSurfaceView.Renderer {
         val angleInDegrees = 360.0f / 10000.0f * time.toInt()
 
         // Рисуем треугольники плоскостью к нам.
-        Matrix.setIdentityM(GLESService.mModelMatrix, 0)
-        Matrix.rotateM(GLESService.mModelMatrix, 0, angleInDegrees, 0.0f, 0.0f, 1.0f)
+        Game.world["tri"]
+            ?.findByFilters(mapOf("name" to "t1"))
+            ?.forEach {
+                it.rotate(angleInDegrees, Dot(0f,0f,1f))
+            }
+        Game.world["tri"]
+            ?.findByFilters(mapOf("name" to "t2"))
+            ?.forEach {
+                it.rotate(angleInDegrees, Dot(0f,0f,1f))
+            }
+        Game.world["tri"]
+            ?.findByFilters(mapOf("name" to "t3"))
+            ?.forEach {
+                it.rotate(angleInDegrees, Dot(0f,0f,1f))
+            }
 
         Game.drawAllObjects()
+
+        Thread.sleep(1000/GLESService.fps)
     }
 }

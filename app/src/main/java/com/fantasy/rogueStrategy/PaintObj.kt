@@ -1,18 +1,19 @@
 package com.fantasy.rogueStrategy
 
 import android.opengl.GLES20
-import com.fantasy.rogueStrategy.PaintObjType.NO_DRAW
-import java.util.*
-import kotlin.collections.ArrayList
+import android.opengl.Matrix
+import com.fantasy.rogueStrategy.GLESService.mModelMatrix
+import com.fantasy.rogueStrategy.PaintObjType.*
 
 class PaintObj(
     private val dots: ArrayList<Dot> = ArrayList(),
     private var paintPars: MutableMap<String, Any> = HashMap(),
-    private var pars: MutableMap<String, Any> = HashMap(),
+    pars: MutableMap<String, Any>? = null,
     var objList: MutableList<PaintObj> = ArrayList(),
     type: PaintObjType = NO_DRAW
 ) {
 
+    private var pars: MutableMap<String, Any>? = pars ?: HashMap()
     private val type: PaintObjType = if(dots.size == 0) NO_DRAW else type
     private var position: Int = 0
 
@@ -36,25 +37,25 @@ class PaintObj(
         return objList.size > 0
     }
 
-    fun find(pars: MutableMap<Any, Any>? = null, paintPars: MutableMap<String, Any>? = null, type: PaintObjType? = null): PaintObj {
-        return PaintObj(objList = objList.filter { obj ->
+    fun findByFilters(pars: Map<Any, Any>? = null, paintPars: Map<String, Any>? = null, type: PaintObjType? = null): List<PaintObj> {
+        return objList.filter { obj ->
             var equalsPars = true
 
             pars?.forEach {
-                if (obj.pars[it.key]?.equals(it.value) != true) {
+                if (it.value != obj.pars?.get(it.key)) {
                     equalsPars = false
                     return@forEach
                 }
             }
             paintPars?.forEach {
-                if (obj.pars[it.key]?.equals(it.value) != true) {
+                if (it.value != obj.pars?.get(it.key)) {
                     equalsPars = false
                     return@forEach
                 }
             }
 
-            equalsPars && type != null && obj.type == type
-        }.toMutableList())
+            equalsPars && (type == null || obj.type == type)
+        }
     }
 
     fun getAllDots(): ArrayList<Dot>{
@@ -70,11 +71,50 @@ class PaintObj(
         return allDots
     }
 
+    private var translate: Dot? = null
+    private var rotate: MutableMap<Dot,Float> = mutableMapOf()
+
+    fun translate(vector: Dot? = null) :PaintObj{
+        translate = vector
+        return this
+    }
+
+    fun rotate(degree: Float, rotateBy: Dot? = null) :PaintObj{
+        val rBy = rotateBy ?: Dot(0f,0f,0f)
+
+        if(rotate[rBy] == null){
+            rotate[rBy] = degree
+        }else{
+            rotate[rBy] = rotate[rBy]?.plus(degree)!!
+        }
+
+        return this
+    }
+
     fun drawIt() {
         if(type != NO_DRAW) {
+            Matrix.setIdentityM(mModelMatrix, 0)
+
+            if(translate != null){
+                val t = translate!!
+                Matrix.translateM(mModelMatrix, 0, t.x, t.y, t.z)
+            }
+
+            if(rotate.isNotEmpty()) {
+                rotate.forEach{
+                    val rBy = it.key
+                    val degree = it.value//Наслаиваются друг на друга
+                    Matrix.rotateM(mModelMatrix, 0, degree, rBy.x, rBy.y, rBy.z)
+                }
+            }
+
             GLESService.bindData()
             GLESService.bindMatrix()
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, this.position, 3)
+
+            when(type){
+                TRIANGLE -> GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3)
+                SQUARE -> TODO()
+            }
         }
 
         objList.forEach{

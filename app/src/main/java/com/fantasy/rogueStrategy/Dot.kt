@@ -19,6 +19,16 @@ class Dot(
         this.color = color
     }
 
+    override fun equals(other: Any?): Boolean {
+        if(other !is Dot) return false
+
+        val o = other as Dot
+
+        return  this.x==o.x &&
+                this.y==o.y &&
+                this.z==o.z
+    }
+
     fun getVerticesData() : ArrayList<Float>{
         val color = color?: RGBA(1f,1f,1f)
         return arrayListOf(
