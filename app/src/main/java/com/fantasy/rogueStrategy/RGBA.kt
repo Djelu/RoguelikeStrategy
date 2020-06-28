@@ -27,7 +27,7 @@ class RGBA(
         this.a = 1f
     }
 
-    fun normalize(num: Int): Float {
-        return (255/num).toFloat()
+    private fun normalize(num: Int): Float {
+        return if(num!=0) (255/num).toFloat() else 0f
     }
 }

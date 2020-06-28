@@ -19,8 +19,6 @@ class MainActivity : AppCompatActivity() {
         mGLSurfaceView = GLSurfaceView(this)
 
         // Проверяем поддереживается ли OpenGL ES 2.0.
-
-        // Проверяем поддереживается ли OpenGL ES 2.0.
         val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val configurationInfo = activityManager.deviceConfigurationInfo
         val supportsEs2 = configurationInfo.reqGlEsVersion >= 0x20000

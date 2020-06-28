@@ -1,7 +1,7 @@
 package com.fantasy.rogueStrategy
 
 import android.opengl.GLES20
-import com.fantasy.rogueStrategy.PaintObjType.*
+import com.fantasy.rogueStrategy.PaintObjType.NO_DRAW
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -9,7 +9,7 @@ class PaintObj(
     private val dots: ArrayList<Dot> = ArrayList(),
     private var paintPars: MutableMap<String, Any> = HashMap(),
     private var pars: MutableMap<String, Any> = HashMap(),
-    private var objList: MutableList<PaintObj> = ArrayList(),
+    var objList: MutableList<PaintObj> = ArrayList(),
     type: PaintObjType = NO_DRAW
 ) {
 
@@ -23,16 +23,9 @@ class PaintObj(
             GLESService.nextObjPosition += dots.size * 3
             //Пропускаем позиции цвета
             if(dots[0].color != null){
-                GLESService.nextObjPosition += 4
+                GLESService.nextObjPosition += dots.size * 4
             }
         }
-
-        //Устанавливаем дефолтные для типов параметры
-        paintPars.putAll(when(type) {
-            TRIANGLE -> TODO()
-            SQUARE -> TODO()
-            NO_DRAW -> TODO()
-        })
     }
 
     fun add(obj: PaintObj) {

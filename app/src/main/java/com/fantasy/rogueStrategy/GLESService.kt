@@ -191,12 +191,12 @@ object GLESService {
         val allVerticesData = Game.getAllVerticesData()
 
         // Инициализируем буфер.
-        val triangle = ByteBuffer
+        vertexData = ByteBuffer
             .allocateDirect(allVerticesData.size * mBytesPerFloat)
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer()
 
-        triangle.put(allVerticesData)
+        vertexData?.put(allVerticesData) ?: throw RuntimeException("VertexData is null.")
     }
 
     fun prepareAllData(){

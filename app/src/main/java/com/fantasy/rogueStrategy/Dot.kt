@@ -7,7 +7,7 @@ class Dot(
 
     var color: RGBA? = null
 ) {
-    val size = 7
+    val size = if(color == null) 3 else 7
 
     constructor(arr: FloatArray) : this() {
         x = arr[0]; y = arr[1]; z = arr[2]
