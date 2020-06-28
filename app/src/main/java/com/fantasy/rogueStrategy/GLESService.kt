@@ -171,11 +171,14 @@ object GLESService {
             GLES20.glEnableVertexAttribArray(mPositionHandle)
 
             // Передаем значения о цвете.
+            vertexData!!.position(mColorOffset)
             GLES20.glVertexAttribPointer(
                 mColorHandle, mColorDataSize, GLES20.GL_FLOAT, false,
                 mStrideBytes, vertexData
             )
             GLES20.glEnableVertexAttribArray(mColorHandle)
+        }else {
+            throw RuntimeException("vertexData == null.")
         }
     }
 
@@ -196,10 +199,13 @@ object GLESService {
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer()
 
-        vertexData?.put(allVerticesData) ?: throw RuntimeException("VertexData is null.")
+        vertexData?.put(allVerticesData)
+                  ?.position(0)
+                  ?: throw RuntimeException("VertexData is null.")
     }
 
     fun prepareAllData(){
+
         setLookAtM(mViewMatrix, 0, floatArrayOf(
             0.0f, 0.0f, 1.5f, // Положение глаза, точки наблюдения в пространстве.
             0.0f, 0.0f, -5.0f, // На какое расстояние мы можем видеть вперед. Ограничивающая плоскость обзора.
@@ -208,8 +214,10 @@ object GLESService {
 
         //Загрузка программы шейдеров
         GLES20.glUseProgram(createProgram())
+
         //Получаем правильные ids
         setHandles()
+
         // Инициализируем буфер.
         initializeBuffer()
     }

@@ -72,6 +72,7 @@ class PaintObj(
 
     fun drawIt() {
         if(type != NO_DRAW) {
+            GLESService.bindData()
             GLESService.bindMatrix()
             GLES20.glDrawArrays(GLES20.GL_TRIANGLES, this.position, 3)
         }
