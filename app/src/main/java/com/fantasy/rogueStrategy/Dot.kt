@@ -29,6 +29,10 @@ class Dot(
                 this.z==o.z
     }
 
+    override fun hashCode(): Int {
+        return "${this.x}${this.y}${this.z}".hashCode()
+    }
+
     fun getVerticesData() : ArrayList<Float>{
         val color = color?: RGBA(1f,1f,1f)
         return arrayListOf(

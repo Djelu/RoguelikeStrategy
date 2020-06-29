@@ -17,18 +17,13 @@ class MyRenderer : GLSurfaceView.Renderer {
 
         Game.world = mutableMapOf(
             "tri" to PaintObj(objList = mutableListOf(
-//                ObjectsService.createTriangle(Dot(0f, -0.5f, 0.0f, RGBA(255, 0, 0)), 0.25f),
-//                ObjectsService.createTriangle(Dot(0f, 0f, 0.0f, RGBA(0, 255, 0)), 0.25f),
-//                ObjectsService.createTriangle(Dot(0f, 0.5f, 0.0f, RGBA(0, 0, 255)), 0.25f)
                 ObjectsService.createTriangle(
                     pars = mapOf("name" to "t1")
                 ),
-
                 ObjectsService.createTriangle(
                     Dot(0f,-1f,0f),
                     pars = mapOf("name" to "t2")
                 ).rotate(90f, Dot(1f,0f,0f)),
-
                 ObjectsService.createTriangle(
                     Dot(1f,0f,0f),
                     pars = mapOf("name" to "t3")
@@ -65,22 +60,9 @@ class MyRenderer : GLSurfaceView.Renderer {
         val time = SystemClock.uptimeMillis() % 10000L
         val angleInDegrees = 360.0f / 10000.0f * time.toInt()
 
-        // Рисуем треугольники плоскостью к нам.
-        Game.world["tri"]
-            ?.findByFilters(mapOf("name" to "t1"))
-            ?.forEach {
-                it.rotate(angleInDegrees, Dot(0f,0f,1f))
-            }
-        Game.world["tri"]
-            ?.findByFilters(mapOf("name" to "t2"))
-            ?.forEach {
-                it.rotate(angleInDegrees, Dot(0f,0f,1f))
-            }
-        Game.world["tri"]
-            ?.findByFilters(mapOf("name" to "t3"))
-            ?.forEach {
-                it.rotate(angleInDegrees, Dot(0f,0f,1f))
-            }
+        Game.world["tri"]?.find("name", "t")?.forEach {
+            it.rotate(angleInDegrees, Dot(0f,0f,1f))
+        }
 
         Game.drawAllObjects()
 

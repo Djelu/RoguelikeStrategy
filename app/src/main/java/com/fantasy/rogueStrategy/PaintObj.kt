@@ -37,6 +37,20 @@ class PaintObj(
         return objList.size > 0
     }
 
+    fun find(par: Any, like: Any): List<PaintObj> {
+        return objList.filter { obj ->
+            val value =  obj.pars?.get(par)
+            val l = if(like is List<*>) like.toList() else arrayListOf(like)
+            return@filter l.any{
+                if(it is String) {
+                    val v = value as String
+                    return@any v.contains(it)
+                }else
+                    return@any value == it
+            }
+        }
+    }
+
     fun findByFilters(pars: Map<Any, Any>? = null, paintPars: Map<String, Any>? = null, type: PaintObjType? = null): List<PaintObj> {
         return objList.filter { obj ->
             var equalsPars = true
@@ -81,12 +95,7 @@ class PaintObj(
 
     fun rotate(degree: Float, rotateBy: Dot? = null) :PaintObj{
         val rBy = rotateBy ?: Dot(0f,0f,0f)
-
-        if(rotate[rBy] == null){
-            rotate[rBy] = degree
-        }else{
-            rotate[rBy] = rotate[rBy]?.plus(degree)!!
-        }
+        rotate[rBy] = degree
 
         return this
     }
