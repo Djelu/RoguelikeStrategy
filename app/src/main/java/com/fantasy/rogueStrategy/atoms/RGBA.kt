@@ -1,4 +1,4 @@
-package com.fantasy.rogueStrategy
+package com.fantasy.rogueStrategy.atoms
 
 class RGBA(
     var r: Float = 0.0f,

@@ -1,7 +1,9 @@
 package com.fantasy.rogueStrategy
 
+import com.fantasy.rogueStrategy.atoms.PaintObj
+
 object Game {
-    var world: MutableMap<String,PaintObj?> = mutableMapOf(
+    var world: MutableMap<String, PaintObj?> = mutableMapOf(
         "tri" to null
     )
 
@@ -19,5 +21,6 @@ object Game {
         world.forEach{
             it.value?.drawIt()
         }
+
     }
 }

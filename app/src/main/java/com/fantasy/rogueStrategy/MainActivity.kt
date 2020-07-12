@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
             mGLSurfaceView?.setEGLContextClientVersion(2)
 
             // Устанавливаем рендеринг, создаем экземпляр класса, он будет описан ниже.
-            mGLSurfaceView?.setRenderer(MyRenderer())
+            mGLSurfaceView?.setRenderer(MyRenderer(this, mGLSurfaceView!!))
         } else {
             // Устройство поддерживает только OpenGL ES 1.x
             // опишите реализацию рендеринга здесь, для поддержку двух систем ES 1 and ES 2.

@@ -1,12 +1,14 @@
-package com.fantasy.rogueStrategy
+package com.fantasy.rogueStrategy.atoms
 
 import android.opengl.GLES20
 import android.opengl.Matrix
-import com.fantasy.rogueStrategy.GLESService.mModelMatrix
-import com.fantasy.rogueStrategy.PaintObjType.*
+import com.fantasy.rogueStrategy.enums.PaintObjType
+import com.fantasy.rogueStrategy.enums.PaintObjType.*
+import com.fantasy.rogueStrategy.services.GLESService
+import com.fantasy.rogueStrategy.services.GLESService.mModelMatrix
 
 class PaintObj(
-    private val dots: ArrayList<Dot> = ArrayList(),
+    private val dots: MutableList<Dot> = ArrayList(),
     private var paintPars: MutableMap<String, Any> = HashMap(),
     pars: MutableMap<String, Any>? = null,
     var objList: MutableList<PaintObj> = ArrayList(),
@@ -16,6 +18,7 @@ class PaintObj(
     private var pars: MutableMap<String, Any>? = pars ?: HashMap()
     private val type: PaintObjType = if(dots.size == 0) NO_DRAW else type
     private var position: Int = 0
+    private var textureId: Int = -1
 
     init {
         if(type != NO_DRAW) {
@@ -72,6 +75,29 @@ class PaintObj(
         }
     }
 
+    fun setTexture(textureId: Int): PaintObj {
+        this.textureId = textureId
+        return this
+    }
+
+    fun setColor(colors: List<RGBA>): PaintObj {
+        when (type){
+            SQUARE -> {
+                if(colors.size==dots.size) {
+                    dots.forEachIndexed { i, dot ->
+                        dot.color = colors[i]
+                    }
+                } else {
+                    throw RuntimeException("Method setColors error: Colors count not equals with object $type.")
+                }
+            }
+            TRIANGLE -> TODO()
+            NO_DRAW -> TODO()
+        }
+
+        return this
+    }
+
     fun getAllDots(): ArrayList<Dot>{
         val allDots = ArrayList<Dot>()
 
@@ -88,14 +114,20 @@ class PaintObj(
     private var translate: Dot? = null
     private var rotate: MutableMap<Dot,Float> = mutableMapOf()
 
-    fun translate(vector: Dot? = null) :PaintObj{
-        translate = vector
+    private fun normalizeDegree(degree: Float): Float {
+        return if(degree>360) degree%360 else degree
+    }
+
+    fun translate(vector: Dot? = null) : PaintObj {
+        if(vector != null) {
+            translate = if (translate == null) vector else translate!! + vector
+        }
         return this
     }
 
-    fun rotate(degree: Float, rotateBy: Dot? = null) :PaintObj{
-        val rBy = rotateBy ?: Dot(0f,0f,0f)
-        rotate[rBy] = degree
+    fun rotate(degree: Float, rotateBy: Dot? = null) : PaintObj {
+        val rBy = rotateBy ?: Dot(0f, 0f, 0f)
+        rotate[rBy] = normalizeDegree(degree)
 
         return this
     }
@@ -103,6 +135,7 @@ class PaintObj(
     fun drawIt() {
         if(type != NO_DRAW) {
             Matrix.setIdentityM(mModelMatrix, 0)
+            GLESService.bindData(textureId)
 
             if(translate != null){
                 val t = translate!!
@@ -117,12 +150,11 @@ class PaintObj(
                 }
             }
 
-            GLESService.bindData()
             GLESService.bindMatrix()
 
             when(type){
                 TRIANGLE -> GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3)
-                SQUARE -> TODO()
+                SQUARE -> GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
             }
         }
 

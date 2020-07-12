@@ -1,23 +1,20 @@
-package com.fantasy.rogueStrategy
+package com.fantasy.rogueStrategy.atoms
 
 class Dot(
     var x: Float = 0.0f,
     var y: Float = 0.0f,
     var z: Float = 0.0f,
 
-    var color: RGBA? = null
+    var color: RGBA? = null,
+
+    var t1: Float = 0.0f,
+    var t2: Float = 0.0f
 ) {
-    val size = if(color == null) 3 else 7
-
-    constructor(arr: FloatArray) : this() {
-        x = arr[0]; y = arr[1]; z = arr[2]
-        color = RGBA(arr[3], arr[4], arr[5], arr[6])
+    init {
+        this.color = color ?: RGBA(1f, 1f, 1f, 1f)
     }
 
-    constructor(arr: FloatArray, color: RGBA) : this() {
-        x = arr[0]; y = arr[1]; z = arr[2]
-        this.color = color
-    }
+    val size = 10
 
     override fun equals(other: Any?): Boolean {
         if(other !is Dot) return false
@@ -33,11 +30,17 @@ class Dot(
         return "${this.x}${this.y}${this.z}".hashCode()
     }
 
+    operator fun plus(dot: Dot): Dot {
+        return Dot(this.x+dot.x, this.y+dot.y, this.z+dot.z)
+    }
+
     fun getVerticesData() : ArrayList<Float>{
-        val color = color?: RGBA(1f,1f,1f)
+        val color = color?: RGBA(1f, 1f, 1f, 1f)
         return arrayListOf(
             x, y, z,
-            color.r, color.g, color.b, color.a
+            color.r, color.g, color.b, color.a,
+            t1, t2
         )
     }
+
 }
